@@ -31,6 +31,8 @@ local DEFAULT_FLY_SPEED = 60
 local MAX_WALK_SPEED = 200
 local MAX_FLY_SPEED = 300
 
+local TransparencyValue = 0
+
 --========================================================--
 -- CHARACTER
 --========================================================--
@@ -239,21 +241,22 @@ Gui.IgnoreGuiInset = true
 Gui.Parent = PlayerGui
 
 --========================================================--
--- MAIN WINDOW - HALF SIZE
+-- MAIN WINDOW
 --========================================================--
 
 local Main = Instance.new("Frame")
 
-Main.Size = UDim2.new(0,190,0,255)
+Main.Size = UDim2.new(0,190,0,288)
 
 Main.Position = UDim2.new(
 	0.5,
 	-95,
 	0.5,
-	-127
+	-144
 )
 
 Main.BackgroundColor3 = Color3.fromRGB(17,17,22)
+Main.BackgroundTransparency = TransparencyValue
 Main.BorderSizePixel = 0
 
 Main.Parent = Gui
@@ -442,9 +445,42 @@ local FlyCorner = Instance.new("UICorner")
 FlyCorner.CornerRadius = UDim.new(0,6)
 FlyCorner.Parent = FlySpeedBox
 
+--========================================================--
+-- TRANSPARENCY BOX
+--========================================================--
+
+local TransparencyBox = Instance.new("TextBox")
+
+TransparencyBox.Size = UDim2.new(1,-20,0,28)
+TransparencyBox.Position = UDim2.new(0,10,0,210)
+
+TransparencyBox.BackgroundColor3 = Color3.fromRGB(29,29,36)
+
+TransparencyBox.PlaceholderText = "Transparency 1-100"
+TransparencyBox.PlaceholderColor3 = Color3.fromRGB(125,125,135)
+
+TransparencyBox.Text = ""
+TransparencyBox.TextColor3 = Color3.new(1,1,1)
+
+TransparencyBox.TextSize = 10
+TransparencyBox.Font = Enum.Font.Gotham
+
+TransparencyBox.ClearTextOnFocus = false
+
+TransparencyBox.Parent = Main
+
+local TransparencyCorner = Instance.new("UICorner")
+
+TransparencyCorner.CornerRadius = UDim.new(0,6)
+TransparencyCorner.Parent = TransparencyBox
+
+--========================================================--
+-- APPLY
+--========================================================--
+
 local ApplyButton = createButton(
 	"✓ APPLY",
-	210
+	243
 )
 
 --========================================================--
@@ -542,7 +578,6 @@ local function MakeDraggable(Object)
 
 end
 
--- Both UI elements are movable
 MakeDraggable(Main)
 MakeDraggable(OpenButton)
 
@@ -749,6 +784,7 @@ end
 
 local function ApplySettings()
 
+	-- Walk Speed
 	if Humanoid then
 
 		local Speed = tonumber(WalkSpeedBox.Text)
@@ -769,6 +805,7 @@ local function ApplySettings()
 
 	end
 
+	-- Fly Speed
 	local NewFlySpeed =
 		tonumber(FlySpeedBox.Text)
 
@@ -782,6 +819,28 @@ local function ApplySettings()
 
 		FlySpeedBox.Text =
 			tostring(FlySpeed)
+
+	end
+
+	-- Transparency
+	local NewTransparency =
+		tonumber(TransparencyBox.Text)
+
+	if NewTransparency then
+
+		NewTransparency = math.clamp(
+			NewTransparency,
+			1,
+			100
+		)
+
+		TransparencyValue = NewTransparency / 100
+
+		Main.BackgroundTransparency =
+			TransparencyValue
+
+		TransparencyBox.Text =
+			tostring(NewTransparency)
 
 	end
 
